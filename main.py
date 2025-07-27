@@ -121,9 +121,9 @@ def main():
             #aktualizovat_ukol()    
         #elif volba == 4:
             #odstranit_ukol()
-        #elif volba == 5:
-            #print("Ukončuji program.")
-            #break
+        elif volba == 5:
+            print("Ukončuji program.")
+            break
 
 if __name__ == "__main__":
     conn = connection_db()
