@@ -105,7 +105,31 @@ def pridat_ukol():
     finally:
         conn.close()
 
+def zobrazit_ukoly():
+    conn = connection_db()
+    if not conn:
+        print("Nepodařilo se připojit k databázi.")
+        return
 
+    cursor = conn.close()
+
+    while True:
+        zorbrazeni_stavu_ukolu = """
+        Zobrazení úkolů podle stavu:  
+            a) - pro zobrazení všech úkolů,
+            b) - pro zobrazení úkolů se stavem 'Nezahájeno',
+            c) - pro zobrazení úkolů se stavem 'Probíhá',
+            q) - pro návrat do hlavního menu. 
+        Vyberte možnost (a, b, c, q):
+        """
+
+        filtr_ukolu = input(zorbrazeni_stavu_ukolu).strip().lower()
+
+        if filtr_ukolu == 'a':
+            cursor.execute("SELECT id, nazev, popis, stav FROM ukoly")
+
+        elif filtr_ukolu == 'b':
+            cursor.execute("SELECT id, nazev, popis, stav FROM ukoly WHERE stav = 'nezahájeno'")
 
 
 def main():
@@ -115,8 +139,8 @@ def main():
 
         if volba == 1:
             pridat_ukol()
-        #elif volba == 2:
-            #zobrazit_ukoly()
+        elif volba == 2:
+            zobrazit_ukoly()
         #elif volba == 3:
             #aktualizovat_ukol()    
         #elif volba == 4:
