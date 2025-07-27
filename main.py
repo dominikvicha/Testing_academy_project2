@@ -35,10 +35,77 @@ def vytvoreni_tabulky(conn):
         print(f"Tabulka nebyla vytvořena. {err}")
 
 
+def hlavni_menu():
+    while True:
+        zadani = """
+        Vítejte v programu Task manager. 
+        Task manager - hlavní menu: 
+        1. Přidat nový úkol.
+        2. Zobraz všechny úkoly. 
+        3. Aktualizovat úkol. 
+        4. Odstraň úkol. 
+        5. Konec programu.
+        Vyberte možnost (1-5).
+        """
 
+        spravny_vstup = range(1,6)
+        volba_uzivatele = input(zadani)
+
+        if volba_uzivatele.isdigit():
+            volba_uzivatele = int(volba_uzivatele)
+
+            if volba_uzivatele in spravny_vstup:
+                print("Vybrali jste možnost:", volba_uzivatele)
+                return volba_uzivatele
+            else:
+                print("Neplatná volba. Zadejte číslo 1 až 5.")
+
+        else:
+            print("Vstup musí být číselný.")
+
+
+def pridat_ukol():
+    while True:
+        nazev = input("Zadejte název úkolu nebo 'q' pro návrat).: ").strip()
+        if not nazev:
+            print("Název úkolu nesmí být prázdný.")
+            continue
+        if nazev.lower() == 'q':
+            print("Vracím se do hlavního menu.")
+            return
+        
+        popis = input("Zadejte popis úkolu (nebo 'q' pro návrat do návrat).: ").strip()
+        if not popis:
+            print("Vracím se hlavního menu.")
+            return
+
+        print("Vstupy jsou validní. Ukládám úkoly do databáze...")
+        break
+
+    
+
+
+
+def main():
+
+    while True: 
+        volba = hlavni_menu()
+
+        if volba == 1:
+            pridat_ukol()
+        #elif volba == 2:
+            #zobrazit_ukoly()
+        #elif volba == 3:
+            #aktualizovat_ukol()    
+        #elif volba == 4:
+            #odstranit_ukol()
+        #elif volba == 5:
+            #print("Ukončuji program.")
+            #break
 
 if __name__ == "__main__":
     conn = connection_db()
     if conn:
         vytvoreni_tabulky(conn)
         conn.close()
+        main()
