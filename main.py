@@ -111,10 +111,10 @@ def zobrazit_ukoly():
         print("Nepodařilo se připojit k databázi.")
         return
 
-    cursor = conn.close()
+    cursor = conn.cursor()
 
     while True:
-        zorbrazeni_stavu_ukolu = """
+        zobrazeni_stavu_ukolu = """
         Zobrazení úkolů podle stavu:  
             a) - pro zobrazení všech úkolů,
             b) - pro zobrazení úkolů se stavem 'Nezahájeno',
@@ -123,13 +123,62 @@ def zobrazit_ukoly():
         Vyberte možnost (a, b, c, q):
         """
 
-        filtr_ukolu = input(zorbrazeni_stavu_ukolu).strip().lower()
+        filtr_ukolu = input(zobrazeni_stavu_ukolu).strip().lower()
 
         if filtr_ukolu == 'a':
             cursor.execute("SELECT id, nazev, popis, stav FROM ukoly")
 
         elif filtr_ukolu == 'b':
             cursor.execute("SELECT id, nazev, popis, stav FROM ukoly WHERE stav = 'nezahájeno'")
+
+        elif filtr_ukolu == 'c':
+            cursor.execute("SELECT id, nazev, popis, stav FROM ukoly WHERE stav = 'probíhá'")
+
+        elif filtr_ukolu == 'q':
+            print("Vracím se do hlavního menu.")
+            conn.close()
+            return
+
+        else:
+            print("Neplatná volba. Zvolte prosím a, b, c nebo q")
+            continue
+
+        ukoly = cursor.fetchall()
+
+        if not ukoly:
+            print("Seznam úkolů je prázdný.")
+        else:
+            print("\n--- Seznam úkolů ---")
+            for i, ukol in enumerate(ukoly, 1):
+                id, nazev, popis, stav = ukol
+                print(f"{i} | Název: {nazev} | Popis: {popis} | Stav: {stav}")    
+
+
+def aktualizovat_ukol():
+    conn = connection_db()
+    if not conn:
+        print("Nepodařilo se připojit k databázi.")
+        return
+    
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, nazev, popis, stav FROM ukoly")
+    list_ukolu = cursor.fetchall()
+
+    if not list_ukolu:
+        print("Seznam úkolů je prázdný")
+        conn.close()
+        return
+    else:
+        print("\n--- Seznam úkolů ---")
+        for id, nazev, popis, stav in list_ukolu:
+            print(f"ID: {id} | Název: {nazev} | Popis: {popis} | Stav: {stav}")
+
+
+
+
+
+
 
 
 def main():
@@ -141,8 +190,8 @@ def main():
             pridat_ukol()
         elif volba == 2:
             zobrazit_ukoly()
-        #elif volba == 3:
-            #aktualizovat_ukol()    
+        elif volba == 3:
+            aktualizovat_ukol()    
         #elif volba == 4:
             #odstranit_ukol()
         elif volba == 5:
