@@ -174,6 +174,60 @@ def aktualizovat_ukol():
         for id, nazev, popis, stav in list_ukolu:
             print(f"ID: {id} | Název: {nazev} | Popis: {popis} | Stav: {stav}")
 
+    while True:
+        vybrane_id = input("Zadejte ID úkolu, který chcete aktualizovat (nebo 'q' pro návrat:) ").strip()
+
+        if vybrane_id.lower() == 'q':
+            print("Vracím se do hlavního menu.")
+            conn.close()
+            return
+        
+        if not vybrane_id.isdigit():
+            print("Zadejte prosím platné číslo ID.")
+            continue
+
+        vybrane_id = int(vybrane_id)
+
+        cursor.execute("SELECT id from ukoly WHERE id = %s", (vybrane_id,))
+        vysledek = cursor.fetchone()
+
+        if vysledek is None:
+            print("Úkol se zadaným ID neexistuje, zkuste to prosím znovu.")
+        else:
+            break
+
+    while True:
+        moznosti_aktualizace = """
+        Vyber nový stav úkolu: 
+        1 - aktualizovat úkol na stav 'probíhá',
+        2 - aktualizovat úkol na stav 'dokončeno',
+        q - pro vrácení se do hlavního menu 
+        """
+        status_ukolu = input(moznosti_aktualizace).strip()
+
+        if status_ukolu == '1':
+            novy_status = 'probíhá'
+            break
+        elif status_ukolu == '2':
+            novy_status = 'dokončeno'
+            break
+        elif status_ukolu == 'q':
+            print("Vracím se do hlavního menu.")
+            break
+        else:
+            print("Neplatná volba. Zadejte prosím 1, 2 nebo q.")
+
+    try:
+        cursor.execute("UPDATE ukoly SET stav = %s WHERE id = %s", (novy_status, vybrane_id))
+
+        conn.commit()
+        print("Stav úkolu byl aktualizováb.")
+
+    except mysql.connector.Error as err:
+        print("Chyba při aktualizaci úkolu: ", err)
+    finally:
+        conn.close()
+
 
 
 
