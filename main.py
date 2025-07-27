@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+from datetime import date 
 
 def connection_db():
     try:
@@ -66,7 +67,7 @@ def hlavni_menu():
 
 def pridat_ukol():
     while True:
-        nazev = input("Zadejte název úkolu nebo 'q' pro návrat).: ").strip()
+        nazev = input("Zadejte název úkolu (nebo 'q' pro návrat).: ").strip()
         if not nazev:
             print("Název úkolu nesmí být prázdný.")
             continue
@@ -82,7 +83,28 @@ def pridat_ukol():
         print("Vstupy jsou validní. Ukládám úkoly do databáze...")
         break
 
+    stav = 'nezahájeno'
+    datum_vytvoreni = date.today()
+
+    conn = connection_db()
+    if not conn:
+        print("Nepodařilo se připojit k databázi.")
+        return
     
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO ukoly (nazev, popis, stav, datum_vytvoreni)
+            VALUES (%s, %s, %s, %s)
+        ''', (nazev, popis, stav, datum_vytvoreni))
+        conn.commit()
+        print("Úkol byl úspěšně přidán.")
+
+    except mysql.connector.Error as err:
+        print("Chyba při přidávání úkolu:", err)
+    finally:
+        conn.close()
+
 
 
 
