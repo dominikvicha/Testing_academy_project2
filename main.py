@@ -229,7 +229,28 @@ def aktualizovat_ukol():
         conn.close()
 
 
+def odstranit_ukol():
+    conn = connection_db()  #udelat funkci na připojeni do databaze
+    if not conn:
+        print("Nepodařilo se připojit k databázi.")
+        return
 
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, nazev, popis, stav FROM ukoly")
+    list_ukolu = cursor.fatchall()
+
+    if not list_ukolu:
+        print("Seznam úkolů je prázdný.")
+        conn.close()
+        return
+    else:
+        print("\n--- Seznam úkolů ---")
+        for id, nazev, popis, stav in list_ukolu:
+            print(f"ID: {id} | Název: {nazev} | Popis: {popis} | Stav: {stav}")
+
+    
+    
 
 
 
