@@ -269,10 +269,26 @@ def odstranit_ukol():
             print("Úkol s tímto ID neexistuje.")
             continue
 
+        potvrzeni_smazani = input(f"Opravdu chcete smazat vybraný úkol '{ukol[1]}' (ID: {id_ukolu})? (a/n): ").strip().lower()
+        if potvrzeni_smazani == 'a':
+            try:
+                cursor.execute("DELETE FROM ukoly WHERE id = %s", (id_ukolu,))
+                conn.commit()
+                print("Vybraný úkol byl úspěšně smazán")
 
-    
-
-
+            except mysql.connector.Error as err:
+                print("Chyba při mazání úkolu: ", err)
+            
+            finally:
+                conn.close()
+            return
+        
+        elif potvrzeni_smazani == 'n':
+            print("Smazání úkolu bylo přerušeno")
+            conn.close()
+            return
+        else:
+            print("Neplatná volba. Zadejte prosím 'a' nebo 'n'.")
 
 
 
