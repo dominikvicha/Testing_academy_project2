@@ -249,7 +249,27 @@ def odstranit_ukol():
         for id, nazev, popis, stav in list_ukolu:
             print(f"ID: {id} | Název: {nazev} | Popis: {popis} | Stav: {stav}")
 
-    
+    while True:
+        id_ukolu = input("Vyber úkol úkol pro odstranění. Nebo 'q' pro ukončení.").strip()
+
+        if id_ukolu == 'q':
+            print("Vracím se do hlavního menu.")
+            conn.close()
+            break
+        if not id_ukolu.isdigit():
+            print("Zadejte platné číslo ID.")
+            continue
+
+        id_ukolu = int(id_ukolu)
+
+        cursor.execute("SELECT id, nazev FROM ukoly WHERE id = %s", (id_ukolu,))
+        ukol = cursor.fechone()
+
+        if ukol is None:
+            print("Úkol s tímto ID neexistuje.")
+            continue
+
+
     
 
 
