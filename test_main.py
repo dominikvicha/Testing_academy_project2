@@ -72,3 +72,31 @@ def test_aktualizovat_ukol_positive(monkeypatch):
     conn.commit()
     conn.close()
 
+def test_aktualizovat_ukol_negative(monkeypatch):
+    conn = connect_test_db()
+    cursor = conn.cursor(buffered=True)
+
+    cursor.execute("""
+        INSERT INTO ukoly (nazev, popis, stav, datum_vytvoreni)
+        VALUES (%s, %s, %s, CURDATE())
+    """, ("Untouched Task", "This should not be changed", "nezahájeno"))
+    conn.commit()
+
+    cursor.execute("SELECT id FROM ukoly WHERE nazev = %s", ("Untouched Task",))
+    untouched_id = cursor.fetchone()[0]
+
+    inputs = iter(["9999", "q"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    aktualizovat_ukol(conn)
+
+    conn = connect_test_db()
+    cursor = conn.cursor(buffered=True)
+
+    cursor.execute("SELECT stav FROM ukoly WHERE id = %s", (untouched_id,))
+    status = cursor.fetchone()[0]
+    assert status == "nezahájeno"
+
+    cursor.execute("DELETE FROM ukoly WHERE id = %s", (untouched_id,))
+    conn.commit()
+    conn.close()
