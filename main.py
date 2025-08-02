@@ -102,8 +102,8 @@ def pridat_ukol(conn):
 
     except mysql.connector.Error as err:
         print("Chyba při přidávání úkolu:", err)
-    finally:
-        conn.close()
+    #finally:
+        #conn.close()
 
 def zobrazit_ukoly():
     conn = connection_db()
