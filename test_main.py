@@ -2,6 +2,7 @@ import mysql.connector
 from datetime import date
 import pytest
 from main import pridat_ukol
+from main import aktualizovat_ukol
 
 def connect_test_db():
     return mysql.connector.connect(
@@ -42,5 +43,32 @@ def test_pridat_ukol_negative(monkeypatch):
     assert result is None
 
     cursor.close()
+    conn.close()
+
+
+def test_aktualizovat_ukol_positive(monkeypatch):
+    conn = connect_test_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO ukoly (nazev, popis, stav, datum_vytvoreni)
+        VALUES (%s, %s, %s, CURDATE())
+    """, ("Test aktualizace", "Popis", "nezahájeno"))
+    conn.commit()
+    
+    cursor.execute("SELECT id FROM ukoly WHERE nazev = %s", ("Test aktualizace",))
+    task_id = cursor.fetchone()[0]
+
+    inputs = iter(["9999", str(task_id), '1'])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    aktualizovat_ukol(conn)
+
+    cursor.execute("SELECT stav FROM ukoly WHERE id = %s", (task_id,))
+    updated_status = cursor.fetchone()[0]
+    assert updated_status == 'probíhá'
+
+    cursor.execute("DELETE FROM ukoly WHERE id = %s", (task_id,))
+    conn.commit()
     conn.close()
 
