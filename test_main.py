@@ -48,7 +48,7 @@ def test_pridat_ukol_negative(monkeypatch):
 
 def test_aktualizovat_ukol_positive(monkeypatch):
     conn = connect_test_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(buffered=True)
 
     cursor.execute("""
         INSERT INTO ukoly (nazev, popis, stav, datum_vytvoreni)
@@ -59,7 +59,7 @@ def test_aktualizovat_ukol_positive(monkeypatch):
     cursor.execute("SELECT id FROM ukoly WHERE nazev = %s", ("Test aktualizace",))
     task_id = cursor.fetchone()[0]
 
-    inputs = iter(["9999", str(task_id), '1'])
+    inputs = iter([str(task_id), '1'])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
 
     aktualizovat_ukol(conn)
