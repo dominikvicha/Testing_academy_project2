@@ -154,8 +154,9 @@ def zobrazit_ukoly(conn):
                 print(f"{i} | Název: {nazev} | Popis: {popis} | Stav: {stav}")    
 
 
-def aktualizovat_ukol(conn):
-    conn = connection_db()
+def aktualizovat_ukol(conn=None):
+    if conn is None:
+        conn = connection_db()
     if not conn:
         print("Nepodařilo se připojit k databázi.")
         return
