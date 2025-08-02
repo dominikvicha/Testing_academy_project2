@@ -13,22 +13,17 @@ def connect_test_db():
 
 def test_pridat_ukol_positive(monkeypatch):
     conn = connect_test_db()
-    cursor = conn.cursor()
+    cursor = conn.cursor(buffered=True)
 
-    # simulate user input 
-    monkeypatch.setattr("builtins.input", lambda _: "Testovací úkol")
 
     inputs = iter(["Test úkol", "Popis úkolu"])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
 
     pridat_ukol(conn)
 
-    cursor.close()
-    cursor = conn.cursor()
     cursor.execute("SELECT * FROM ukoly WHERE nazev = %s", ("Test úkol",))
     result = cursor.fetchone()
     assert result is not None
-
 
     cursor.execute("DELETE FROM ukoly WHERE nazev = %s", ("Test úkol",))
     conn.commit()
