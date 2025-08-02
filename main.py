@@ -65,7 +65,7 @@ def hlavni_menu():
             print("Vstup musí být číselný.")
 
 
-def pridat_ukol():
+def pridat_ukol(conn):
     while True:
         nazev = input("Zadejte název úkolu (nebo 'q' pro návrat).: ").strip()
         if not nazev:
@@ -86,7 +86,7 @@ def pridat_ukol():
     stav = 'nezahájeno'
     datum_vytvoreni = date.today()
 
-    conn = connection_db()
+    #conn = connection_db()
     if not conn:
         print("Nepodařilo se připojit k databázi.")
         return
@@ -292,19 +292,19 @@ def odstranit_ukol():
 
 
 
-def main():
+def main(conn):
 
     while True: 
         volba = hlavni_menu()
 
         if volba == 1:
-            pridat_ukol()
+            pridat_ukol(conn)
         elif volba == 2:
-            zobrazit_ukoly()
+            zobrazit_ukoly(conn)
         elif volba == 3:
-            aktualizovat_ukol()    
-        #elif volba == 4:
-            #odstranit_ukol()
+            aktualizovat_ukol(conn)    
+        elif volba == 4:
+            odstranit_ukol(conn)
         elif volba == 5:
             print("Ukončuji program.")
             break
@@ -313,5 +313,6 @@ if __name__ == "__main__":
     conn = connection_db()
     if conn:
         vytvoreni_tabulky(conn)
+        main(conn)
         conn.close()
-        main()
+        
