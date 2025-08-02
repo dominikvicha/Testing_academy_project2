@@ -105,7 +105,7 @@ def pridat_ukol(conn):
     #finally:
         #conn.close()
 
-def zobrazit_ukoly():
+def zobrazit_ukoly(conn):
     conn = connection_db()
     if not conn:
         print("Nepodařilo se připojit k databázi.")
@@ -154,7 +154,7 @@ def zobrazit_ukoly():
                 print(f"{i} | Název: {nazev} | Popis: {popis} | Stav: {stav}")    
 
 
-def aktualizovat_ukol():
+def aktualizovat_ukol(conn):
     conn = connection_db()
     if not conn:
         print("Nepodařilo se připojit k databázi.")
@@ -229,7 +229,7 @@ def aktualizovat_ukol():
         conn.close()
 
 
-def odstranit_ukol():
+def odstranit_ukol(conn):
     conn = connection_db()  #udelat funkci na připojeni do databaze
     if not conn:
         print("Nepodařilo se připojit k databázi.")
