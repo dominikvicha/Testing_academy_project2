@@ -29,3 +29,18 @@ def test_pridat_ukol_positive(monkeypatch):
     conn.commit()
     conn.close()
     
+def test_pridat_ukol_negative(monkeypatch):
+    conn = connect_test_db()
+    cursor = conn.cursor(buffered=True)
+
+    monkeypatch.setattr("builtins.input", lambda _: "q")
+
+    pridat_ukol(conn)
+
+    cursor.execute("SELECT * FROM ukoly WHERE nazev = %s", ("Test úkol",))
+    result = cursor.fetchone()
+    assert result is None
+
+    cursor.close()
+    conn.close()
+
