@@ -155,8 +155,10 @@ def zobrazit_ukoly(conn):
 
 
 def aktualizovat_ukol(conn=None):
+    own_connection = False 
     if conn is None:
         conn = connection_db()
+        own_connection = True 
     if not conn:
         print("Nepodařilo se připojit k databázi.")
         return
@@ -227,7 +229,8 @@ def aktualizovat_ukol(conn=None):
     except mysql.connector.Error as err:
         print("Chyba při aktualizaci úkolu: ", err)
     finally:
-        conn.close()
+        if own_connection:
+            conn.close()
 
 
 def odstranit_ukol(conn):
