@@ -233,8 +233,11 @@ def aktualizovat_ukol(conn=None):
             conn.close()
 
 
-def odstranit_ukol(conn):
-    conn = connection_db()  #udelat funkci na připojeni do databaze
+def odstranit_ukol(conn=None):
+    own_connection = False 
+    if conn is None:
+        conn = connection_db()
+        own_connection = True 
     if not conn:
         print("Nepodařilo se připojit k databázi.")
         return
@@ -284,7 +287,8 @@ def odstranit_ukol(conn):
                 print("Chyba při mazání úkolu: ", err)
             
             finally:
-                conn.close()
+                if own_connection:
+                    conn.close()
             return
         
         elif potvrzeni_smazani == 'n':
