@@ -267,7 +267,7 @@ def odstranit_ukol(conn):
         id_ukolu = int(id_ukolu)
 
         cursor.execute("SELECT id, nazev FROM ukoly WHERE id = %s", (id_ukolu,))
-        ukol = cursor.fechone()
+        ukol = cursor.fetchone()
 
         if ukol is None:
             print("Úkol s tímto ID neexistuje.")
