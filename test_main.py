@@ -115,19 +115,45 @@ def test_odstranit_ukol_positive(monkeypatch):
 
     cursor.execute("SELECT id FROM ukoly WHERE nazev = %s", ("ToDelete",))
     task_id = cursor.fetchone()[0]
+    print(f"testing deletion task_id = {task_id}")
 
     inputs = iter([str(task_id), 'a', 'q'])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
 
     odstranit_ukol(conn)
 
-    #conn = connect_test_db()
-    cursor = conn.cursor(buffered=True)
-
+    #cursor = conn.cursor(buffered=True)
     cursor.execute("SELECT * FROM ukoly WHERE id = %s", (task_id,))
     result = cursor.fetchone()
-    assert result is None
+    assert result is None, f"Task id {task_id} was not deleted"
     
     conn.close()
 
+def test_odstranit_ukol_negative(monkeypatch):
+    conn = connect_test_db()
+    cursor = conn.cursor(buffered=True)
 
+    cursor.execute("""
+        INSERT INTO ukoly (nazev, popis, stav, datum_vytvoreni)
+        VALUES (%s, %s, %s, CURDATE())
+    """, ("Untouchable", "This task should survive", "nezahájeno"))
+    conn.commit()
+
+    cursor.execute("SELECT id FROM ukoly WHERE nazev = %s", ("Untouchable",))
+    untouched_id = cursor.fetchone()[0]
+
+    inputs = iter(["9999", "q"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    odstranit_ukol(conn)
+    
+    conn = connect_test_db()
+    cursor = conn.cursor(buffered=True)
+
+    cursor.execute("SELECT * FROM ukoly WHERE id = %s", (untouched_id,))
+    result = cursor.fetchone()
+    assert result is not None, f"Task id {untouched_id} should not have been deleted."
+
+    cursor.execute("DELETE FROM ukoly WHERE id = %s", (untouched_id,))
+    conn.commit()
+    conn.close()
