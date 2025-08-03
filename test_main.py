@@ -146,7 +146,7 @@ def test_odstranit_ukol_negative(monkeypatch):
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
 
     odstranit_ukol(conn)
-    
+
     conn = connect_test_db()
     cursor = conn.cursor(buffered=True)
 
