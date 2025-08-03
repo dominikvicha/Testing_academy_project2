@@ -3,6 +3,7 @@ from datetime import date
 import pytest
 from main import pridat_ukol
 from main import aktualizovat_ukol
+from main import odstranit_ukol
 
 def connect_test_db():
     return mysql.connector.connect(
@@ -100,3 +101,33 @@ def test_aktualizovat_ukol_negative(monkeypatch):
     cursor.execute("DELETE FROM ukoly WHERE id = %s", (untouched_id,))
     conn.commit()
     conn.close()
+
+
+def test_odstranit_ukol_positive(monkeypatch):
+    conn = connect_test_db()
+    cursor = conn.cursor(buffered=True)
+
+    cursor.execute("""
+        INSERT INTO ukoly (nazev, popis, stav, datum_vytvoreni)
+        VALUES (%s, %s, %s, CURDATE())
+    """, ("ToDelete", "Enter", "nezahájeno"))
+    conn.commit()
+
+    cursor.execute("SELECT id FROM ukoly WHERE nazev = %s", ("ToDelete",))
+    task_id = cursor.fetchone()[0]
+
+    inputs = iter([str(task_id), 'a'])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    odstranit_ukol(conn)
+
+    conn = connect_test_db()
+    cursor = conn.cursor(buffered=True)
+
+    cursor.execute("SELECT * FROM ukoly WHERE id = %s", (task_id,))
+    result = cursor.fetchone()
+    assert result is None
+    
+    conn.close()
+
+
