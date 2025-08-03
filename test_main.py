@@ -116,12 +116,12 @@ def test_odstranit_ukol_positive(monkeypatch):
     cursor.execute("SELECT id FROM ukoly WHERE nazev = %s", ("ToDelete",))
     task_id = cursor.fetchone()[0]
 
-    inputs = iter([str(task_id), 'a'])
+    inputs = iter([str(task_id), 'a', 'q'])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
 
     odstranit_ukol(conn)
 
-    conn = connect_test_db()
+    #conn = connect_test_db()
     cursor = conn.cursor(buffered=True)
 
     cursor.execute("SELECT * FROM ukoly WHERE id = %s", (task_id,))
