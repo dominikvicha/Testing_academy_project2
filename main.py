@@ -242,7 +242,7 @@ def odstranit_ukol(conn):
     cursor = conn.cursor()
 
     cursor.execute("SELECT id, nazev, popis, stav FROM ukoly")
-    list_ukolu = cursor.fatchall()
+    list_ukolu = cursor.fetchall()
 
     if not list_ukolu:
         print("Seznam úkolů je prázdný.")
